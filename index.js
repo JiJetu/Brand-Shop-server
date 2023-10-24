@@ -41,7 +41,7 @@ async function run() {
 
         app.get('/brand/:name', async (req, res) => {
             const name = req.params.name;
-            const query = {name: name}
+            const query = { name: name }
             const result = await brandCollection.findOne(query);
             // console.log(query);
             res.send(result)
@@ -68,6 +68,39 @@ async function run() {
             console.log(newProduct);
             const result = await productCollection.insertOne(newProduct);
             res.send(result);
+        })
+
+        app.patch('/product/:id', async (req, res) => {
+            const newProduct = req.body;
+            const id = req.params.id;
+            console.log(newProduct);
+            const filter = { _id: new ObjectId(id) };
+            const update = { $set: newProduct };
+            const options = { upsert: false };
+
+            const result = await productCollection.updateOne(
+                filter,
+                update,
+                options
+            );
+            res.send(result);
+        })
+
+        app.get('/product/single/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: new ObjectId(id) };
+            const result = await productCollection.findOne(query);
+            res.send(result);
+        })
+
+        app.get('/product/:brandname', async (req, res) => {
+            const name = req.params.brandname;
+            //  console.log("id",id);
+            const query = { bname: name }
+            // console.log("query",query);
+            const result = await productCollection.find(query).toArray()
+            // console.log(result);
+            res.send(result)
         })
 
         // Send a ping to confirm a successful connection
