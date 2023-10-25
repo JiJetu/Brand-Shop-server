@@ -115,17 +115,21 @@ async function run() {
 
         app.post('/addedProduct', async (req, res) => {
             const newProduct = req.body;
-            console.log(newProduct);
+            const isExists = await addedProductCollection.findOne(newProduct);
+            if (isExists) {
+                return res.json("Product already exists in the cart")
+            }
+
             const result = await addedProductCollection.insertOne(newProduct);
             res.send(result);
         })
 
         app.delete('/addedProduct/:id', async (req, res) => {
             const id = req.params.id;
-            const query = {_id: new ObjectId(id)}
-            const result = await addedProductCollection.deleteOne(query);
-            res.send(result)
-        } )
+            const filter = { _id: id };
+            const data = await addedProductCollection.deleteOne(filter);
+            res.send(data)
+        })
 
         // Send a ping to confirm a successful connection
         await client.db("admin").command({ ping: 1 });
